@@ -1,4 +1,5 @@
 import numpy as np
+from datetime import datetime, timezone
 
 # Time
 JD_epoch = 2461163.0 # Julian date at noon on 5/2/2026 this is the start of the sim
@@ -38,40 +39,54 @@ def vel_eci_to_ecef(v_eci, r_eci, gmst):
     return R @ v_eci - np.cross(omega_earth, R @ r_eci)
 
 
-def gmst_from_ut1(delta_T):
-    """
-    Compute GMST using your polynomial
-    delta_T in seconds
-    """
-    gmst = (4.894961212823058 +
-            delta_T * (6.300388098984893 +
-            delta_T * (5.075209994113591e-15 -
-            9.253097568194336e-24 * delta_T)))
-    gmst = gmst % (2*np.pi)
-    return gmst
 
-def get_gmst(t_curr):
-    JD = JD_epoch + t_curr / 86400.0
-    t = (JD - J2000) / 36525.0
-    delta_T = (JD - 2451545.0) * 86400.0
-    gmst = gmst_from_ut1(delta_T)
-    return gmst
+def julian_date(dt: datetime) -> float:
+    """Return the Julian Date for a UTC datetime."""
+    dt = dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt
+    j2000 = datetime(2000, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+    return 2_451_545.0 + (dt - j2000).total_seconds() / 86_400.0
+
+
+def gmst_from_datetime(dt: datetime) -> float:
+    """
+    Compute Greenwich Mean Sidereal Time (GMST) in radians.
+    Uses the IAU 1982 formula accurate to ~0.1 arcsec over several decades.
+    """
+    jd = julian_date(dt)
+    T  = (jd - 2_451_545.0) / 36_525.0
+    gmst_deg = (100.4606184
+                + 36_000.77004 * T
+                + 0.000387933 * T**2
+                - T**3 / 38_710_000.0)
+    ut1_seconds = (dt.hour * 3600 + dt.minute * 60
+                   + dt.second + dt.microsecond * 1e-6)
+    gmst_deg += 360.98564724 * ut1_seconds / 86_400.0
+    return np.deg2rad(gmst_deg % 360.0)
+
+def wrap_angle(a):
+    return (a + np.pi) % (2*np.pi) - np.pi
 
 
 def get_ground_station_location(R_EARTH, lat, lon):
     r_ecf = R_EARTH * np.array([np.cos(lat) * np.cos(lon), np.cos(lat) * np.sin(lon), np.sin(lat)])
     return r_ecf
 
-def ecf_to_tpc(lat, lon):
-    c_lat = np.cos(lat)
-    s_lat = np.sin(lat)
-    c_lon = np.cos(lon)
-    s_lon = np.sin(lon)
-    return np.array([
-        [-s_lon, c_lon, 0],
-        [-s_lat * c_lon, -s_lat * s_lon, c_lat],
-        [c_lat * c_lon, c_lat * s_lon, s_lat]
-    ])
+def ecf_to_tpc(lat_rad, lon_rad):
+    sin_lat, cos_lat = np.sin(lat_rad), np.cos(lat_rad)
+    sin_lon, cos_lon = np.sin(lon_rad), np.cos(lon_rad)
+
+    # Unit vectors of the NEU frame expressed in ECEF
+    N = np.array([-sin_lat * cos_lon,
+                  -sin_lat * sin_lon,
+                   cos_lat])
+    E = np.array([-sin_lon,
+                   cos_lon,
+                   0.0])
+    U = np.array([ cos_lat * cos_lon,
+                   cos_lat * sin_lon,
+                   sin_lat])
+
+    return np.vstack([N, E, U])
 
 def tpc_to_ecf(lat, lon):
     C_ET = ecf_to_tpc(lat, lon)

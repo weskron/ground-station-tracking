@@ -25,8 +25,8 @@ sigma_accel = 1.08263e-3 # km/s^2, Size of J2 acceleration
 Q_s = np.diag([sigma_accel**2, sigma_accel**2, sigma_accel**2]) # process noise 
 
 # Measurement Noise
-sigma_rho     = 50 # km
-sigma_rho_dot = 0.5 # km/s
+sigma_rho     = 5e-2 # km
+sigma_rho_dot = 5e-3 # km/s
 sigma_Az      = np.deg2rad(0.1)
 sigma_El      = np.deg2rad(0.1)
 R_k = np.diag([sigma_rho**2, sigma_rho_dot**2, sigma_Az**2, sigma_El**2]) # measurement noise
@@ -39,14 +39,60 @@ P0 = np.diag([sigma_pos**2, sigma_pos**2, sigma_pos**2,
 
 
 # -- Ground Station Information ------
-beta_max = np.deg2rad(50) # max viewing angle
-# New Zealand
-lat_nz = np.deg2rad(-45.0)
-lon_nz = np.deg2rad(170.0)
-r_ecf_nz = get_ground_station_location(R_EARTH, lat_nz, lon_nz)
-r_tpc_nz = ecf_to_tpc(lat_nz, lon_nz) @ r_ecf_nz
+# LeoLabs global radar network - 7 operational sites (as of late 2024)
+# Sources:
+#   - Wikipedia: https://en.wikipedia.org/wiki/LeoLabs
+#   - NZ exact coords: https://www.radartutorial.eu/19.kartei/02.surv/karte087.en.html
+#   - Arizona (Dec 2024): https://leolabs.space/blog/uhf-radar-arizona-operational/
+#   - Azores (Jun 2023): https://www.prnewswire.com/news-releases/301844777.html
+#   - W. Australia (Jan 2023): https://en.prnasia.com/releases/apac/391623.shtml
+# NOTE: LeoLabs does not publish exact GPS coordinates. Coordinates below are
+#       derived from press releases and public reporting; treat as approximate.
 
-# Alaska
+beta_max = np.deg2rad(80)  # max viewing angle
+
+# --- New Zealand (Kiwi Space Radar, Central Otago, South Island) ---
+# Exact coords from radartutorial.eu: 45°02'19.9"S, 170°05'44.9"E
+lat_nz = np.deg2rad(-45.039)
+lon_nz = np.deg2rad(170.096)
+r_ecf_nz = get_ground_station_location(R_EARTH, lat_nz, lon_nz)
+
+# --- Alaska (Poker Flat Research Range, Fairbanks area) ---
+lat_ak = np.deg2rad(64.8)
+lon_ak = np.deg2rad(-147.5)
+r_ecf_ak = get_ground_station_location(R_EARTH, lat_ak, lon_ak)
+
+# --- Texas (Midland) ---
+lat_tx = np.deg2rad(31.9)
+lon_tx = np.deg2rad(-102.2)
+r_ecf_tx = get_ground_station_location(R_EARTH, lat_tx, lon_tx)
+
+# --- Argentina (Tierra del Fuego / Patagonia region) ---
+lat_ag = np.deg2rad(-53.8)
+lon_ag = np.deg2rad(-67.7)
+r_ecf_ag = get_ground_station_location(R_EARTH, lat_ag, lon_ag)
+
+# --- Costa Rica Space Radar (Guanacaste, commissioned Apr 2021) ---
+lat_cr = np.deg2rad(10.0)
+lon_cr = np.deg2rad(-84.2)
+r_ecf_cr = get_ground_station_location(R_EARTH, lat_cr, lon_cr)
+
+# --- Western Australia Space Radar (Collie Shire, near Bunbury, operational Jan 2023) ---
+lat_wa = np.deg2rad(-33.4)
+lon_wa = np.deg2rad(116.1)
+r_ecf_wa = get_ground_station_location(R_EARTH, lat_wa, lon_wa)
+
+# --- Azores Space Radar (Santa Maria Island, Portugal, commissioned Jun 2023) ---
+lat_az = np.deg2rad(36.97)
+lon_az = np.deg2rad(-25.07)
+r_ecf_az = get_ground_station_location(R_EARTH, lat_az, lon_az)
+
+# --- Arizona (eastern AZ, ~1.5 hrs east of Tucson, operational Dec 2024) ---
+# UHF next-gen Planar DRA radar; exact location not publicly disclosed
+lat_zn = np.deg2rad(32.5)
+lon_zn = np.deg2rad(-109.5)
+r_ecf_zn = get_ground_station_location(R_EARTH, lat_zn, lon_zn)
+
 
 ground_stations = {
     "New Zealand": {
@@ -54,5 +100,39 @@ ground_stations = {
         "lat": lat_nz,
         "lon": lon_nz,
     },
+    "Alaska": {
+        "r_ecf": r_ecf_ak,
+        "lat": lat_ak,
+        "lon": lon_ak,
+    },
+    "Texas": {
+        "r_ecf": r_ecf_tx,
+        "lat": lat_tx,
+        "lon": lon_tx,
+    },
+    "Argentina": {
+        "r_ecf": r_ecf_ag,
+        "lat": lat_ag,
+        "lon": lon_ag,
+    },
+    "Costa Rica": {
+        "r_ecf": r_ecf_cr,
+        "lat": lat_cr,
+        "lon": lon_cr,
+    },
+    "Western Australia": {
+        "r_ecf": r_ecf_wa,
+        "lat": lat_wa,
+        "lon": lon_wa,
+    },
+    "Azores": {
+        "r_ecf": r_ecf_az,
+        "lat": lat_az,
+        "lon": lon_az,
+    },
+    "Arizona": {
+        "r_ecf": r_ecf_zn,
+        "lat": lat_zn,
+        "lon": lon_zn,
+    },
 }
-
