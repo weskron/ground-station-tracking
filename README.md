@@ -27,18 +27,6 @@ with measurements from the LeoLabs ground station network.
 ### 3D Trajectory
 ![3D Trajectory](plots/trajectory_3d.png)
 
-## Ground Stations
-
-| Station           | Latitude | Longitude |
-|-------------------|----------|-----------|
-| Alaska            | 64.8° N  | 147.5° W  |
-| Texas             | 31.9° N  | 102.2° W  |
-| New Zealand       | 45.0° S  | 170.1° E  |
-| Argentina         | 53.8° S  | 67.7° W   |
-| Costa Rica        | 10.0° N  | 84.2° W   |
-| Western Australia | 33.4° S  | 116.1° E  |
-| Azores            | 37.0° N  | 25.1° W   |
-| Arizona           | 32.5° N  | 109.5° W  |
 
 ## Setup
 
