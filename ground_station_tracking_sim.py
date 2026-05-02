@@ -35,7 +35,7 @@ def main():
     x_true[:, 0] = x_0
 
     noise0 = np.random.multivariate_normal(np.zeros(6), P0).flatten()
-    xmkm = np.zeros((nx, N+1)) # TODO: Add some noise. It needs to match what is added to the xmkp
+    xmkm = np.zeros((nx, N+1)) 
     xmkm[:, 0] = x_0 + noise0
     xmkp = np.zeros((nx, N+1))
     xmkp[:, 0] = x_0 + noise0
@@ -96,7 +96,7 @@ def main():
         # determine if the target is within the viewing cone of the ground stations
         viewing_station.append(find_ground_station(gmst[k], x_true[:, k+1]))
         if viewing_station[k] != "none":
-            print(f"In view of {viewing_station[k]}")
+            # print(f"In view of {viewing_station[k]}")
             # z_k is [range, range_rate, El, Az] This needs noise added based on measurements. 
             meas_noise = np.random.multivariate_normal(np.zeros(4), R_k)
             z_k[:, k] = compute_measurement(gmst[k], viewing_station[k], x_true[:, k+1]) + meas_noise
