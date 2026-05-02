@@ -53,8 +53,8 @@ beta_max = np.deg2rad(80)  # max viewing angle
 
 # --- New Zealand (Kiwi Space Radar, Central Otago, South Island) ---
 # Exact coords from radartutorial.eu: 45°02'19.9"S, 170°05'44.9"E
-lat_nz = np.deg2rad(-45.039)
-lon_nz = np.deg2rad(170.096)
+lat_nz = np.deg2rad(-45.0)
+lon_nz = np.deg2rad(170.0)
 r_ecf_nz = get_ground_station_location(R_EARTH, lat_nz, lon_nz)
 
 # --- Alaska (Poker Flat Research Range, Fairbanks area) ---
@@ -67,11 +67,6 @@ lat_tx = np.deg2rad(31.9)
 lon_tx = np.deg2rad(-102.2)
 r_ecf_tx = get_ground_station_location(R_EARTH, lat_tx, lon_tx)
 
-# --- Argentina (Tierra del Fuego / Patagonia region) ---
-lat_ag = np.deg2rad(-53.8)
-lon_ag = np.deg2rad(-67.7)
-r_ecf_ag = get_ground_station_location(R_EARTH, lat_ag, lon_ag)
-
 # --- Costa Rica Space Radar (Guanacaste, commissioned Apr 2021) ---
 lat_cr = np.deg2rad(10.0)
 lon_cr = np.deg2rad(-84.2)
@@ -83,8 +78,8 @@ lon_wa = np.deg2rad(116.1)
 r_ecf_wa = get_ground_station_location(R_EARTH, lat_wa, lon_wa)
 
 # --- Azores Space Radar (Santa Maria Island, Portugal, commissioned Jun 2023) ---
-lat_az = np.deg2rad(36.97)
-lon_az = np.deg2rad(-25.07)
+lat_az = np.deg2rad(36.9)
+lon_az = np.deg2rad(-25.0)
 r_ecf_az = get_ground_station_location(R_EARTH, lat_az, lon_az)
 
 # --- Arizona (eastern AZ, ~1.5 hrs east of Tucson, operational Dec 2024) ---
@@ -109,11 +104,6 @@ ground_stations = {
         "r_ecf": r_ecf_tx,
         "lat": lat_tx,
         "lon": lon_tx,
-    },
-    "Argentina": {
-        "r_ecf": r_ecf_ag,
-        "lat": lat_ag,
-        "lon": lon_ag,
     },
     "Costa Rica": {
         "r_ecf": r_ecf_cr,
